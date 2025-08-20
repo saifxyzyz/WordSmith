@@ -10,23 +10,15 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""  #comment this line if you have GPU
 # Use the same model ID from Hugging Face for the base model
 BASE_MODEL = "unsloth/gemma-3-270m-it"
 # This is the directory where SFTTrainer saved your model
-ADAPTER_PATH = "gemma3_model_output\checkpoint-39" 
+ADAPTER_PATH = "gemma3_model_output\checkpoint-36" 
 
 # --- Load the base model ---
-# Use the same quantization config used during fine-tuning
-quantization_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.float16,
-    bnb_4bit_use_double_quant=True,
-)
-
+# For CPU, we load the model in full precision (float32) for best performance
 print("Loading base model...")
 model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
-    quantization_config=quantization_config,
     device_map=device,
-    torch_dtype= torch.bfloat16
+    torch_dtype=torch.float32
 )
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
 print("Base model loaded successfully.")
@@ -39,8 +31,11 @@ model = PeftModel.from_pretrained(model, ADAPTER_PATH, local_files_only=True)
 # Merging the adapter weights into the base model is optional but recommended for inference
 # It makes the model faster by combining the weights into a single, cohesive model
 # and eliminates the need for the PEFT library at inference time.
-#model = model.merge_and_unload()
-#print("Adapters merged successfully.")
+model = model.merge_and_unload()
+print("Adapters merged successfully.")
+
+#compile the model
+model = torch.compile(model)
 
 # --- Define a prompt for the model to generate text from ---
 # Use the same chat template that the model was fine-tuned on
@@ -57,11 +52,11 @@ inputs = tokenizer(chat_template, return_tensors="pt").to(device)
 outputs = model.generate(
     input_ids=inputs.input_ids,
     attention_mask=inputs.attention_mask,
-    max_new_tokens=100,  # Adjust for desired output length
+    max_new_tokens=500,  # Adjust for desired output length
     do_sample=True,
     temperature=0.5,
-    top_k=20,
-    top_p=0.55,
+    top_k=50,
+    top_p=0.75,
 )
 
 # Decode and print the output
