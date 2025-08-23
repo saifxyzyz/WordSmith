@@ -20,11 +20,11 @@ I have provided a few datasets to train the model on, but you can outsource a da
 ## Train the model:  
 Once you have decided what you want to fine-tune the model on, and made changes in the train.py script accordingly,  
 Run:  
-```train.py```   
+```python train.py```   
 P.S. This is going to take a good while  
 
 ## Once the model is done training
 You can interact with it by running:  
-```inference.py```
+```python inference.py```
 
 
