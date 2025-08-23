@@ -1,10 +1,11 @@
-### WordSmith: Your Professional Correspondent  
-### Create Virtual environment  
+# WordSmith: Your Professional Correspondent  
+## Create Virtual environment  
 ```python -m venv my_hf_env```
 
-### Activate Virtual environment  
+## Activate Virtual environment  
 On macOS/Linux  
 ```source my_hf_env/bin/activate```  
+
 On Windows  
 ```my_hf_env\Scripts\activate```
 
@@ -12,7 +13,7 @@ After activation, your command line prompt will change to show the environment's
 
 ## install dependencies:
 ```pip install -r requirements.txt```  
-## Note: If you have a GPU, read the commented lines.  
+### Note: If you have a GPU, read the commented lines.  
 ## Choose your dataset:
 I have provided a few datasets to train the model on, but you can outsource a dataset as well. Make sure to replace the dataset value in train.py.  
 
